@@ -290,16 +290,20 @@
 							resp = response;
 						}
 
-						var tweets = $.map(resp, extract_template_data);
-							tweets = $.grep(tweets, s.filter).sort(s.comparator).slice(0, s.count);
+						if(resp.errors !== undefined) {
+							list.append($.map(resp.errors, function(o) { return "<li>" + o.message + "</li>"; }).join(''));
+						} else {
+							var tweets = $.map(resp, extract_template_data);
+								tweets = $.grep(tweets, s.filter).sort(s.comparator).slice(0, s.count);
 
-						list.append($.map(tweets, function(o) { return "<li>" + t(s.template, o) + "</li>"; }).join('')).
-							children('li:first').addClass('tweet_first').end().
-							children('li:odd').addClass('tweet_even').end().
-							children('li:even').addClass('tweet_odd');
+							list.append($.map(tweets, function(o) { return "<li>" + t(s.template, o) + "</li>"; }).join('')).
+								children('li:first').addClass('tweet_first').end().
+								children('li:odd').addClass('tweet_even').end().
+								children('li:even').addClass('tweet_odd');
 
-						if (s.outro_text) list.after(outro);
-						$(widget).trigger("loaded").trigger((tweets ? "empty" : "full"));
+							if (s.outro_text) list.after(outro);
+							$(widget).trigger("loaded").trigger((tweets ? "empty" : "full"));
+						}
 						if (s.refresh_interval) {
 							window.setTimeout(function() { $(widget).trigger("tweet:load"); }, 1000 * s.refresh_interval);
 						}
