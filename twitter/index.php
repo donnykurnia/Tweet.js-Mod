@@ -87,10 +87,16 @@ class ezTweet {
 				$JSONraw = $this->getTwitterJSON();
 				$JSON = $JSONraw['response'];
 
+				// when error occured, return cache file even when it's already past cache interval
+
 				// Don't write a bad cache file if there was a CURL error
 				if($JSONraw['errno'] != 0) {
 					$this->consoleDebug($JSONraw['error']);
-					return $JSON;
+					if(file_exists($cache_file)) {
+						return file_get_contents($cache_file, FILE_USE_INCLUDE_PATH);
+					} else {
+						return $JSON;
+					}
 				}
 
 				// Check for twitter-side errors
@@ -101,9 +107,17 @@ class ezTweet {
 							$message = 'Twitter Error: "'.$error['message'].'", Error Code #'.$error['code'];
 							$this->consoleDebug($message);
 						}
-						return false;
+						if(file_exists($cache_file)) {
+							return file_get_contents($cache_file, FILE_USE_INCLUDE_PATH);
+						} else {
+							return false;
+						}
 					} else {
-						return $JSON;
+						if(file_exists($cache_file)) {
+							return file_get_contents($cache_file, FILE_USE_INCLUDE_PATH);
+						} else {
+							return $JSON;
+						}
 					}
 				}
 
