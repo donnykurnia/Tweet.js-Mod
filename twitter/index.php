@@ -93,15 +93,17 @@ class ezTweet {
 					return $JSON;
 				}
 
-				if($this->debug === true) {
-					// Check for twitter-side errors
-					$pj = json_decode($JSON, true);
-					if(isset($pj['errors'])) {
+				// Check for twitter-side errors
+				$pj = json_decode($JSON, true);
+				if(isset($pj['errors'])) {
+					if($this->debug === true) {
 						foreach($pj['errors'] as $error) {
 							$message = 'Twitter Error: "'.$error['message'].'", Error Code #'.$error['code'];
 							$this->consoleDebug($message);
 						}
 						return false;
+					} else {
+						return $JSON;
 					}
 				}
 
